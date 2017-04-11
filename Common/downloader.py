@@ -73,11 +73,11 @@ class Downloader:
                     # retry 5XX HTTP errors
                     return self._get(url, headers, proxy, num_retries-1, data)
                 else:
-                    logging.basicConfig(filename='download_error.log',level=logging.ERROR)
+                    logging.basicConfig(filename='download.log',level=logging.ERROR)
                     logging.error('%s,%s,%s',code,str(e),url)
             else:
                 code = None
-                logging.basicConfig(filename='download_error.log',level=logging.ERROR)
+                logging.basicConfig(filename='download.log',level=logging.ERROR)
                 logging.error('Error,%s',url)
         return {'html': html, 'code': code}
     
