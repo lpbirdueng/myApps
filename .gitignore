@@ -81,6 +81,15 @@ celerybeat-schedule
 venv/
 ENV/
 
+# ignore all files in the ChinaA/a,b,c directory
+ChinaA/a
+ChinaA/b
+ChinaA/c
+hkdata/*.csv
+*.txt
+*.xls
+*.xlsx
+
 # Spyder project settings
 .spyderproject
 
