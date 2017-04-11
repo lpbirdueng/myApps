@@ -9,12 +9,13 @@ from zipfile import ZipFile
 import zipfile
 from io import BytesIO
 import logging
-
+from Common import constants
 DEFAULT_AGENT = 'Mozilla/5.0'
 DEFAULT_DELAY = 5
-DEFAULT_RETRIES = 2
-DEFAULT_TIMEOUT = 60
-DEFAULT_PROXIES = 'http://luale:ZAQ!5tgb@mwghkg.corp.knorr-bremse.com:8080/wpad.dat'
+DEFAULT_RETRIES = 10
+DEFAULT_TIMEOUT = 600
+#DEFAULT_PROXIES = 'http://luale:ZAQ!5tgb@mwghkg.corp.knorr-bremse.com:8080/wpad.dat'
+DEFAULT_PROXIES = constants.cProxy
 
 class Downloader:
     def __init__(self, delay=DEFAULT_DELAY,user_agent=DEFAULT_AGENT, proxies=DEFAULT_PROXIES,num_retries=DEFAULT_RETRIES,timeout=DEFAULT_TIMEOUT, opener=None, cache=None):
