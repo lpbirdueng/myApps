@@ -85,10 +85,10 @@ ENV/
 ChinaA/a
 ChinaA/b
 ChinaA/c
-hkdata/*.csv
 *.txt
 *.xls
 *.xlsx
+*.csv
 
 # Spyder project settings
 .spyderproject

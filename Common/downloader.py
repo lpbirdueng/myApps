@@ -10,7 +10,7 @@ import zipfile
 from io import BytesIO
 import logging
 from Common import constants
-DEFAULT_AGENT = 'Mozilla/5.0'
+DEFAULT_AGENT = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36'
 DEFAULT_DELAY = 5
 DEFAULT_RETRIES = 10
 DEFAULT_TIMEOUT = 600
@@ -18,7 +18,7 @@ DEFAULT_TIMEOUT = 600
 DEFAULT_PROXIES = constants.cProxy
 
 class Downloader:
-    def __init__(self, delay=DEFAULT_DELAY,user_agent=DEFAULT_AGENT, proxies=DEFAULT_PROXIES,num_retries=DEFAULT_RETRIES,timeout=DEFAULT_TIMEOUT, opener=None, cache=None):
+    def __init__(self, delay=DEFAULT_DELAY,user_agent=DEFAULT_AGENT, proxies=DEFAULT_PROXIES,num_retries=DEFAULT_RETRIES,timeout=DEFAULT_TIMEOUT, opener=None, cache=None,data=None):
         socket.setdefaulttimeout(timeout)
         self.throttle = Throttle(delay)
         self.user_agent = user_agent
@@ -26,6 +26,7 @@ class Downloader:
         self.num_retries = num_retries
         self.opener = opener
         self.cache = cache
+        self.data = data
     def __call__(self, url):
         result = None
         if self.cache:
@@ -45,15 +46,20 @@ class Downloader:
             #proxy = random.choice(self.proxies) if self.proxies else None
             proxy = self.proxies if self.proxies else None
             headers={'user-agent':self.user_agent}
-            result = self.download(url, headers, proxy=proxy, num_retries=self.num_retries)
+            result = self.download(url, headers, proxy=proxy, num_retries=self.num_retries,data=self.data)
             if self.cache:
                 #save result to cache
                 self.cache[url] = result
         return result['html']
     
     def download(self, url, headers, proxy, num_retries, data=None):
+        if data is not None:
+            encoded_data = urllib.parse.urlencode(data)
+            encoded_data = encoded_data.encode('utf-8')
+        else:
+            encoded_data = None
         print('Downloading:',url)
-        request = urllib.request.Request(url, data, headers or {})
+        request = urllib.request.Request(url, encoded_data, headers or {})
         #opener = self.opener or request.build_opener()
         opener = self.opener or urllib.request.build_opener()
         if proxy:
@@ -64,7 +70,7 @@ class Downloader:
             html = response.read()
             code = response.code
             logging.basicConfig(filename='download.log',level=logging.DEBUG)
-            logging.info('%s,%s',code,url)
+            logging.info('%s,%s,%s',code,url,data)
         except Exception as e:
             print('Download error:',str(e))
             html = ''
