@@ -147,3 +147,5 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+Common/constants.py
