@@ -85,6 +85,7 @@ ENV/
 ChinaA/a
 ChinaA/b
 ChinaA/c
+Common/constants.py
 *.txt
 *.xls
 *.xlsx
