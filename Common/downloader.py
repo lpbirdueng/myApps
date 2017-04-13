@@ -13,7 +13,7 @@ from Common import constants
 DEFAULT_AGENT = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36'
 DEFAULT_DELAY = 5
 DEFAULT_RETRIES = 10
-DEFAULT_TIMEOUT = 600
+DEFAULT_TIMEOUT = 6000
 #DEFAULT_PROXIES = 'http://luale:ZAQ!5tgb@mwghkg.corp.knorr-bremse.com:8080/wpad.dat'
 DEFAULT_PROXIES = constants.cProxy
 

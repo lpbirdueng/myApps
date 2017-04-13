@@ -1,4 +1,4 @@
-from myApps.Common.downloader import Downloader
+from Common.downloader import Downloader
 D = Downloader()
 url = 'http://www.cninfo.com.cn/cninfo-new/data/download'
 values={
