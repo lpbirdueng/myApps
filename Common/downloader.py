@@ -95,7 +95,7 @@ class Downloader:
         if extract:
             try:
                 with ZipFile(BytesIO(zipped_data)) as zf:
-                    zf.extractall()
+                    zf.extractall(path="./sh/")
             except zipfile.BadZipFile:
                 print("Bad Zip file, retry")
                 #return self._get(url,filename,extract)

@@ -1,4 +1,12 @@
+from Common import file_util
+namelist=[]
+namelist = file_util.get_file_list('./sz')
+for row in namelist:
+    with open('filelist.csv', 'a', encoding='utf-8', newline='\n') as f:
+        f.write(row+'\n')
+"""
 from Common.downloader import Downloader
+
 D = Downloader()
 url = 'http://www.cninfo.com.cn/cninfo-new/data/download'
 values={
@@ -16,7 +24,7 @@ values={
 }
 D.data = values
 D.saveZipToLocal(url,extract=True)
-
+"""
 """
 url='http://www.cninfo.com.cn/cninfo-new/data/query'
 values = {'keyWord' : '000001',
