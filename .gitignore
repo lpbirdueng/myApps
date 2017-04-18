@@ -85,7 +85,6 @@ ENV/
 ChinaA/a
 ChinaA/b
 ChinaA/c
-Common/constants.py
 *.txt
 *.xls
 *.xlsx
@@ -149,12 +148,6 @@ $RECYCLE.BIN/
 *.lnk
 
 Common/constants.py
-<<<<<<< Updated upstream
-Common/constants.py
-=======
-
 .idea/workspace.xml
->>>>>>> Stashed changes
 .idea/misc.xml
 .idea/myApps.iml
-.idea/workspace.xml
