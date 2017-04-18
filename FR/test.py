@@ -1,8 +1,8 @@
 from Common import file_util
 namelist=[]
-namelist = file_util.get_file_list('./sz')
+namelist = file_util.get_file_list('./sh')
 for row in namelist:
-    with open('filelist.csv', 'a', encoding='utf-8', newline='\n') as f:
+    with open('shfilelist.csv', 'a', encoding='utf-8', newline='\n') as f:
         f.write(row+'\n')
 """
 from Common.downloader import Downloader
