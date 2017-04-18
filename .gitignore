@@ -85,6 +85,7 @@ ENV/
 ChinaA/a
 ChinaA/b
 ChinaA/c
+.idea/
 *.txt
 *.xls
 *.xlsx
