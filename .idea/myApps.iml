@@ -5,7 +5,7 @@
       <excludeFolder url="file://$MODULE_DIR$/FR/sh" />
       <excludeFolder url="file://$MODULE_DIR$/FR/sz" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.5.3 (/Library/Frameworks/Python.framework/Versions/3.5/bin/python3.5)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.5.3 (C:\Users\luale\Documents\alex\software\py\python.exe)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="TestRunnerService">
