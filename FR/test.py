@@ -1,9 +1,16 @@
 from Common import file_util
 namelist=[]
+#filter_str = r'.*\w{2}_\w{3}_\d{6}_\d{4}\.csv'
+filter_str = r'.*sz|sh_lrb|fzb|llb_\d{6}_\d{4}\.csv'
+namelist = file_util.get_file_list_with_filter("./",filter_str)
+for s in namelist:
+    print(s)
+"""
 namelist = file_util.get_file_list('./sh')
 for row in namelist:
     with open('shfilelist.csv', 'a', encoding='utf-8', newline='\n') as f:
         f.write(row+'\n')
+"""
 """
 from Common.downloader import Downloader
 
