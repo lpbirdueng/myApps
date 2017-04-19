@@ -29,8 +29,9 @@ def get_file_list_with_filter(path,expression):
     filtered_files = []
     all_files = get_file_list(path)
     for f in all_files:
-        #print("f = ", f)
+
         if re_file_name.match(f) is not None:
             filtered_files.append(f)
+            print("f = ", f)
     return filtered_files
 

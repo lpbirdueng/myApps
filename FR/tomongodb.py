@@ -17,6 +17,10 @@ def initimportdb(path, expression, dbhost="localhost", dbport=27017):
     db = client.list_company
     for file_name in file_list:
         frame = pd.read_csv(file_name, encoding='gbk')
+        #print('file name = ',file_name)
+        if file_name == './sh/.DS_Store':
+            continue
+        #print("frame = ",frame)
         frame['机构ID'] = frame['机构ID'].apply(lambda x: '{0:0>6}'.format(x))
         tframe = frame.T
         tframe.index = tframe.index.str.encode('utf-8')
@@ -41,9 +45,9 @@ def exportdatatocsv(conditions={}, dbhost="localhost", dbport=27017, database=""
 
 
 if __name__ == '__main__':
-    filter_str = r'.*sz|sh_lrb|fzb|llb_\d{6}_\d{4}\.csv'
-    # initimportdb(path="./", expression=filter_str)
-    results = exportdatatocsv(database="list_company",collection="lrb")
-    frame = pd.DataFrame(list(results))
-    print(frame.ix[0])
+    filter_str = r'.*sh_lrb|fzb|llb_\d{6}_\d{4}\.csv'
+    initimportdb(path="./sh", expression=filter_str)
+    #results = exportdatatocsv(database="list_company",collection="lrb")
+    #frame = pd.DataFrame(list(results))
+    #print(frame.ix[0])
 
