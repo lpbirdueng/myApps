@@ -38,6 +38,7 @@ def initimportdb(path, expression, dbhost="localhost", dbport=27017):
                 continue
             except Exception as e:
                 print(e.details)
+                print(file_name)
         else:
             print("Collection not found for files", file_name)
             return None
@@ -105,14 +106,14 @@ def exportdatatodf(conditions={}, dbhost="localhost", dbport=27017, database="",
 
 if __name__ == '__main__':
     filter_str = r'.*(sz|sh)_(lrb|fzb|llb)_\d{6}_\d{4}\.csv'
-    #inserted_list = initimportdb(path=".\sh", expression=filter_str)
-    #inserted_list = initimportdb(path=".\sz", expression=filter_str)
-    #print(inserted_list)
+    #inserted_list = initimportdb(path="./sh", expression=filter_str)
+    inserted_list = initimportdb(path="./sz", expression=filter_str)
+    print(len(inserted_list))
     #df = exportdatatodf(database="list_company",collection="llb")
     #df.to_csv("llb_out.csv")
     #inid = initstocklist(file_name=".\sz_list.csv", id_column="公司代码")
-    inid = initstocklist(collection_name="sh_stock", file_name=".\sh_b.csv", id_column="B股代码")
-    print(len(inid))
+    #inid = initstocklist(collection_name="sh_stock", file_name=".\sh_b.csv", id_column="B股代码")
+    #print(len(inid))
 """
     results = exportdatatocsv(database="list_company",collection="fzb")
     frame = pd.DataFrame(list(results))
