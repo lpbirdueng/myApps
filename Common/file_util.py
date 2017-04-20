@@ -32,6 +32,5 @@ def get_file_list_with_filter(path,expression):
 
         if re_file_name.match(f) is not None:
             filtered_files.append(f)
-            print("f = ", f)
     return filtered_files
 

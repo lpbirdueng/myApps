@@ -85,7 +85,10 @@ ENV/
 ChinaA/a
 ChinaA/b
 ChinaA/c
-.idea/
+Common/constants.py
+.idea/workspace.xml
+.idea/misc.xml
+.idea/myApps.iml
 *.txt
 *.xls
 *.xlsx
@@ -147,8 +150,3 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
-
-Common/constants.py
-.idea/workspace.xml
-.idea/misc.xml
-.idea/myApps.iml

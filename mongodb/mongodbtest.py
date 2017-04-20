@@ -7,6 +7,9 @@ import csv
 import json
 from bson.objectid import ObjectId
 
+df = pd.read_csv("https://www.szse.cn/szseWeb/ShowReport.szse?SHOWTYPE=xlsx&CATALOGID=1110&tab1PAGENO=1&ENCODE=1&TABKEY=tab1")
+print(df)
+exit()
 # df = pd.read_csv('sz_lrb_000001_2000.csv',encoding='gbk', converters={'机构ID': lambda x:str(x)})
 # df = pd.read_table('sz_lrb_000001_1992.csv', encoding='gbk', sep=',')
 df = pd.read_csv('sz_lrb_000001_2014.csv', encoding='gbk')
@@ -33,7 +36,7 @@ data = json.loads(tdf.to_json(force_ascii=False)).values()
 # data = tdf[0].to_json(force_ascii=False)
 # data = json.loads(tdf.to_json(force_ascii=False))
 # encoded_data = data.decode('gbk').encode('utf-8')
-print("data =", data)
+#print("data =", data)
 
 # df.to_csv('out.csv',encoding='utf-8')
 # data = pd.read_csv('out.csv')
