@@ -97,14 +97,17 @@ class Downloader:
                 logging.error('Error,%s', url)
         return {'html': html, 'code': code}
 
-    def saveZipToLocal(self, url, filename='test.zip', extract=False):
+    def saveZipToLocal(self, url, filename='test.zip', extract=False, path='./download'):
         zipped_data = self.__call__(url)
         if (len(zipped_data) == 0):
             return False
         if extract:
             try:
                 with ZipFile(BytesIO(zipped_data)) as zf:
-                    zf.extractall(path="./sh/")
+                    if path is not None:
+                        zf.extractall(path=path)
+                    else:
+                        zf.extractall()
             except zipfile.BadZipFile:
                 print("Bad Zip file, retry")
                 # return self._get(url,filename,extract)
