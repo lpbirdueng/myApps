@@ -4,24 +4,23 @@ import pandas as pd
 import json
 from Common import file_util
 import re
+import os
+import csv
+
 
 
 def initimportdb(path, expression, dbhost="localhost", dbport=27017):
     file_list = file_util.get_file_list_with_filter(path=path, expression=expression)
+    print("file number = ", len(file_list))
     if file_list is None:
         print("No file selected!")
         return None
-    """
-    re_lrb = re.compile(".*_lrb_.*")
-    re_fzb = re.compile(".*_fzb_.*")
-    re_llb = re.compile(".*_llb_.*")
-    """
     id_list = []
     re_table = re.compile(".*_(lrb|fzb|llb)_.*")
     client = MongoClient(dbhost, dbport)
     db = client.list_company
     for file_name in file_list:
-        frame = pd.read_csv(file_name, encoding='gbk')
+        frame = pd.read_csv(file_name, encoding='gbk', skip_blank_lines=True)
         if frame.empty:
             print("No data in file ", file_name)
             continue
@@ -35,25 +34,17 @@ def initimportdb(path, expression, dbhost="localhost", dbport=27017):
             try:
                 result = db[my_collection].insert_many(data)
                 id_list.append(result.inserted_ids)
-                continue
             except Exception as e:
                 print(e.details)
                 print(file_name)
+                # Move error file to error folder
+                error_path = os.path.join(os.path.abspath('.'), 'error file', os.path.split(file_name)[1])
+                os.rename(file_name, error_path)
         else:
             print("Collection not found for files", file_name)
             return None
-        """
-        if re_fzb.match(file_name) is not None:
-            result = db.fzb.insert_many(data)
-            continue
-        if re_lrb.match(file_name) is not None:
-            result = db.lrb.insert_many(data)
-            continue
-        if re_llb.match(file_name) is not None:
-            result = db.llb.insert_many(data)
-            continue
-        """
     return id_list
+
 
 def initstocklist(dbhost="localhost", dbport=27017, collection_name="sz_stock", file_name=None, id_column="A股代码"):
     """
@@ -86,7 +77,6 @@ def initstocklist(dbhost="localhost", dbport=27017, collection_name="sz_stock", 
     return inserted_list
 
 
-
 def exportdatatodf(conditions={}, dbhost="localhost", dbport=27017, database="", collection=""):
     """
     Export data from mongo db in dataframe with conditions
@@ -105,19 +95,24 @@ def exportdatatodf(conditions={}, dbhost="localhost", dbport=27017, database="",
 
 
 if __name__ == '__main__':
+    """import data from csv to db"""
     filter_str = r'.*(sz|sh)_(lrb|fzb|llb)_\d{6}_\d{4}\.csv'
-    #inserted_list = initimportdb(path="./sh", expression=filter_str)
-    inserted_list = initimportdb(path="./sz", expression=filter_str)
-    print(len(inserted_list))
-    #df = exportdatatodf(database="list_company",collection="llb")
-    #df.to_csv("llb_out.csv")
-    #inid = initstocklist(file_name=".\sz_list.csv", id_column="公司代码")
-    #inid = initstocklist(collection_name="sh_stock", file_name=".\sh_b.csv", id_column="B股代码")
-    #print(len(inid))
-"""
-    results = exportdatatocsv(database="list_company",collection="fzb")
-    frame = pd.DataFrame(list(results))
-    frame.to_csv("fzb_out.csv")
-"""
-
-
+    # inserted_list = initimportdb(path="./sh", expression=filter_str)
+    # file_path = os.path.join(os.path.abspath('.'), 'sz')
+    # file_path = os.path.join(os.path.abspath('.'), 'sh')
+    # print("file path = ", file_path)
+    # inserted_list = initimportdb(path=file_path, expression=filter_str)
+    # print(len(inserted_list))
+    """Export collection to csv
+    """
+    with open("fzb_columns.csv",mode='r',newline='',encoding='utf-8') as f:
+        fzb_columns = csv.reader(f)
+        print(fzb_columns)
+    #df = exportdatatodf(database="list_company", collection="fzb")
+    #sorted_df = df.sort_values(by='_id')
+    #sorted_df.to_csv("fzb_out.csv")
+    """import stock code
+    """
+    # inid = initstocklist(file_name=".\sz_list.csv", id_column="公司代码")
+    # inid = initstocklist(collection_name="sh_stock", file_name=".\sh_b.csv", id_column="B股代码")
+    # print(len(inid))
