@@ -98,21 +98,32 @@ if __name__ == '__main__':
     """import data from csv to db"""
     filter_str = r'.*(sz|sh)_(lrb|fzb|llb)_\d{6}_\d{4}\.csv'
     # inserted_list = initimportdb(path="./sh", expression=filter_str)
-    # file_path = os.path.join(os.path.abspath('.'), 'sz')
-    # file_path = os.path.join(os.path.abspath('.'), 'sh')
-    # print("file path = ", file_path)
-    # inserted_list = initimportdb(path=file_path, expression=filter_str)
-    # print(len(inserted_list))
+    #file_path = os.path.join(os.path.abspath('.'), 'sz')
+    #file_path = os.path.join(os.path.abspath('.'), 'sh')
+    #print("file path = ", file_path)
+    #inserted_list = initimportdb(path=file_path, expression=filter_str)
+    #print(len(inserted_list))
     """Export collection to csv
     """
+
     with open("fzb_columns.csv",mode='r',newline='',encoding='utf-8') as f:
-        fzb_columns = csv.reader(f)
+        fzb_columns = list(csv.reader(f))
+        fzb_columns = fzb_columns[0]
+        #fzb_columns.insert(0,"_id")
         print(fzb_columns)
-    #df = exportdatatodf(database="list_company", collection="fzb")
+
+    df = exportdatatodf(database="list_company", collection="fzb")
     #sorted_df = df.sort_values(by='_id')
-    #sorted_df.to_csv("fzb_out.csv")
+    sorted_df = df.reindex_axis(fzb_columns, axis=1)
+    sorted_df.to_csv("fzb_out.csv")
     """import stock code
     """
-    # inid = initstocklist(file_name=".\sz_list.csv", id_column="公司代码")
-    # inid = initstocklist(collection_name="sh_stock", file_name=".\sh_b.csv", id_column="B股代码")
-    # print(len(inid))
+    #SZ stock insert
+    #file_path = os.path.join(os.path.abspath('.'),'sz_list.csv')
+    #inid = initstocklist(file_name=file_path, id_column="公司代码")
+    #Shanghai stock insert
+    #file_path = os.path.join(os.path.abspath('.'),'sh_a.csv')
+    #inid = initstocklist(collection_name="sh_stock", file_name=file_path, id_column="A股代码")
+    #file_path = os.path.join(os.path.abspath('.'), 'sh_b.csv')
+    #inid = initstocklist(collection_name="sh_stock", file_name=file_path, id_column="B股代码")
+    #print(len(inid[0]))
