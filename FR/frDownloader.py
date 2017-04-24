@@ -35,3 +35,17 @@ def getFR(url='', stock_list=[], types=['lrb', 'fzb', 'llb']):
             orgid = 'gssh' + stock[0]
         basicFRDownload(pUrl=url, pMarket=market, pTypes=types, pCode=stock[0], pOrgid=orgid, pMinYear=stock[1],
                         pMaxYear=stock[2], pCw_code=stock[0])
+
+def get_fixed_year(url='', stock_list=[], types=['lrb', 'fzb', 'llb'], min_year="1986", max_year="2016"):
+    """
+    stock_list = [stock_code]
+    """
+    for stock in stock_list:
+        if stock < '599999':
+            market = 'sz'
+            orgid = 'gssz' + stock
+        else:
+            market = 'sh'
+            orgid = 'gssh' + stock
+        basicFRDownload(pUrl=url, pMarket=market, pTypes=types, pCode=stock, pOrgid=orgid, pMinYear=min_year,
+                        pMaxYear=max_year, pCw_code=stock)

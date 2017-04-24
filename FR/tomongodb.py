@@ -6,6 +6,7 @@ from Common import file_util
 import re
 import os
 import csv
+from Common import mongodb_utility
 
 
 
@@ -93,8 +94,22 @@ def exportdatatodf(conditions={}, dbhost="localhost", dbport=27017, database="",
     frame = pd.DataFrame(list(results))
     return frame
 
+def validate_data():
+    db = mongodb_utility.connect_db(db_name="list_company")
+    sz_df = mongodb_utility.export2df(database=db,collection="sz_stock")
+    sh_df = mongodb_utility.export2df(database=db,collection="sh_stock")
+    #sz_df.to_csv("sz_stock_out.csv")
+    #sz_list = sz_df['_id'].apply(lambda x: '{0:0>6}'.format(x))
+    sz_list = sz_df['_id']
+    #min_year = sz_df['A股上市日期'].min()
+    #print(min_year)
+
+
 
 if __name__ == '__main__':
+    """validate data"""
+    validate_data()
+
     """import data from csv to db"""
     filter_str = r'.*(sz|sh)_(lrb|fzb|llb)_\d{6}_\d{4}\.csv'
     # inserted_list = initimportdb(path="./sh", expression=filter_str)
@@ -105,17 +120,18 @@ if __name__ == '__main__':
     #print(len(inserted_list))
     """Export collection to csv
     """
-
+    """
     with open("fzb_columns.csv",mode='r',newline='',encoding='utf-8') as f:
         fzb_columns = list(csv.reader(f))
         fzb_columns = fzb_columns[0]
         #fzb_columns.insert(0,"_id")
-        print(fzb_columns)
+        #print(fzb_columns)
 
     df = exportdatatodf(database="list_company", collection="fzb")
     #sorted_df = df.sort_values(by='_id')
     sorted_df = df.reindex_axis(fzb_columns, axis=1)
     sorted_df.to_csv("fzb_out.csv")
+    """
     """import stock code
     """
     #SZ stock insert

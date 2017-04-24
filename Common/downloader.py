@@ -67,7 +67,7 @@ class Downloader:
             encoded_data = encoded_data.encode('utf-8')
         else:
             encoded_data = None
-        print('Downloading:', url)
+        print('Downloading:', url, ' ', encoded_data)
         request = urllib.request.Request(url, encoded_data, headers or {})
         # opener = self.opener or request.build_opener()
         opener = self.opener or urllib.request.build_opener()
@@ -99,7 +99,7 @@ class Downloader:
 
     def saveZipToLocal(self, url, filename='test.zip', extract=False, path='./download'):
         zipped_data = self.__call__(url)
-        if (len(zipped_data) == 0):
+        if len(zipped_data) == 0:
             return False
         if extract:
             try:
