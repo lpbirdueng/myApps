@@ -98,12 +98,23 @@ def validate_data():
     db = mongodb_utility.connect_db(db_name="list_company")
     sz_df = mongodb_utility.export2df(database=db,collection="sz_stock")
     sh_df = mongodb_utility.export2df(database=db,collection="sh_stock")
-    #sz_df.to_csv("sz_stock_out.csv")
-    #sz_list = sz_df['_id'].apply(lambda x: '{0:0>6}'.format(x))
-    sz_list = sz_df['_id']
-    #min_year = sz_df['A股上市日期'].min()
-    #print(min_year)
+    fzb_df = mongodb_utility.export2df(database=db, collection="fzb")
+    llb_df = mongodb_utility.export2df(database=db,collection="llb")
+    lrb_df = mongodb_utility.export2df(database=db,collection="lrb")
 
+    #fzb_list = fzb_df['机构ID']
+    #print(fzb_list)
+    all_stock = sz_df['_id'].append(sh_df['_id'])
+    #sz_list = sz_df['_id']
+    #sh_list = sh_df['_id']
+    #all_code = sz_list.append(sh_list)
+
+    #print(sz_list.count())
+    #print(sh_list.count())
+    #print(all_stock.count())
+    missing_fzb = all_stock[~all_stock.isin(fzb_df['机构ID'])]
+    print(missing_fzb.count())
+    print(missing_fzb)
 
 
 if __name__ == '__main__':
