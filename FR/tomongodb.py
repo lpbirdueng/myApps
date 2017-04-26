@@ -130,11 +130,12 @@ def validate_data():
     missing_sh_2017 = missing_sh_a[missing_sh_a["A股上市日期"] < "2017"].copy()
     print(missing_sh_2017.count())
     missing_sh_2017["max_year"] = "2016"
+    missing_sh_2017["A股上市日期"] = "2016"
     download_list = missing_sh_2017.values.tolist()
     """download missing data
     """
     url = 'http://www.cninfo.com.cn/cninfo-new/data/download'
-    frDownloader.getFR(url=url, stock_list=download_list)
+    #frDownloader.getFR(url=url, stock_list=download_list)
 
 
     #missing_fzb_sh.to_csv("missing_fzb_sh.csv")
@@ -144,18 +145,20 @@ def validate_data():
 
 if __name__ == '__main__':
     """validate data"""
-    #validate_data()
+    validate_data()
 
-    db = mongodb_utility.connect_db(db_name="list_company")
+    #db = mongodb_utility.connect_db(db_name="list_company")
     """validate SH A stock and download missing stock    """
+    """
     missing_list = validate_stock(data_base=db, collection='lrb', stock_table='sh_stock')
     missing_list["A股上市日期"] = missing_list["A股上市日期"].apply(lambda x: str(x.strip())[0:4])
     missing_2016 = missing_list[missing_list["A股上市日期"] < "2017"].copy()
     print(missing_2016.count())
     missing_2016["max_year"] = "2016"
     download_list = missing_2016.values.tolist()
+    """
     """download missing data"""
-    url = 'http://www.cninfo.com.cn/cninfo-new/data/download'
+    #url = 'http://www.cninfo.com.cn/cninfo-new/data/download'
     #frDownloader.getFR(url=url, stock_list=download_list)
 
     """import data from csv to db"""
@@ -163,7 +166,8 @@ if __name__ == '__main__':
     # inserted_list = initimportdb(path="./sh", expression=filter_str)
     #file_path = os.path.join(os.path.abspath('.'), 'sz')
     #file_path = os.path.join(os.path.abspath('.'), 'sh')
-    """append data from ./new
+    """append data from ./new"""
+    """
     filter_str = r'.*(sz|sh)_(lrb|fzb|llb)_\d{6}_\d{4}\.csv'
     file_path = os.path.join(os.path.abspath('.'), 'new')
     print("file path = ", file_path)

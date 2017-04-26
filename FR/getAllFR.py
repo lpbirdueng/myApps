@@ -23,8 +23,8 @@ if __name__ == '__main__':
     szb_list = df_b.values.tolist()
     frDownloader.getFR(url=url, stock_list=szb_list)
     """
-    """download SH B stock data
-    """
+    """download SH B stock data"""
+    
     df_b = sh_df[Series(sh_df['A股上市日期']).isnull()][["_id", "B股上市日期"]]
     df_b["B股上市日期"] = df_b["B股上市日期"].apply(lambda x: str(x.strip())[0:4])
     df_b["_id"] = df_b["_id"].apply(lambda x: str(int(x)))
