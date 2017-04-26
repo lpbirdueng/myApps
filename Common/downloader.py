@@ -1,5 +1,5 @@
 import urllib
-# import random
+import random
 import time
 from datetime import datetime
 import socket
@@ -13,7 +13,8 @@ from Common import constants
 import http.cookiejar
 
 DEFAULT_AGENT = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36'
-DEFAULT_DELAY = 5
+#DEFAULT_DELAY = 5
+DEFAULT_DELAY = random.randint(2,6)
 DEFAULT_RETRIES = 10
 DEFAULT_TIMEOUT = 6000
 # DEFAULT_PROXIES = 'http://luale:ZAQ!5tgb@mwghkg.corp.knorr-bremse.com:8080/wpad.dat'
@@ -174,7 +175,7 @@ class Throttle:
         domain = urllib.parse.urlsplit(url).netloc
         last_accessed = self.domains.get(domain)
         if self.delay > 0 and last_accessed is not None:
-            sleep_secs = self.delay - (datetime.now() - last_accessed).seconds
+            sleep_secs = self.delay + random.uniform(0,2) - (datetime.now() - last_accessed).seconds
             if sleep_secs > 0:
                 time.sleep(sleep_secs)
         self.domains[domain] = datetime.now()
