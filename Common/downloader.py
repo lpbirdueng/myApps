@@ -112,9 +112,11 @@ class Downloader:
                         zf.extractall()
             except zipfile.BadZipFile:
                 print("Bad Zip file, retry", self.data)
+                print(zipped_data)
                 logging.basicConfig(filename='download.log', level=logging.ERROR)
                 logging.error('Bad Zip,%s', self.data)
-                return self.saveZipToLocal(url, filename, extract)
+                #return self.saveZipToLocal(url, filename, extract)
+                return False
         else:
             f = open(filename, "w+b")
             f.write(zipped_data)
