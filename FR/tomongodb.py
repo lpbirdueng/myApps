@@ -208,12 +208,12 @@ if __name__ == '__main__':
     """validate data"""
     #validate_data()
     #validate_bw_reports()
-    #validate_reports_download(table1="lrb",table2="fzb",auto_download=True)
+    #validate_reports_download(table1="fzb",table2="llb",auto_download=True)
 
     #db = mongodb_utility.connect_db(db_name="list_company")
     """validate SH A stock and download missing stock    """
     """
-    missing_list = validate_stock(data_base=db, collection='lrb', stock_table='sh_stock')
+    missing_list = validate_stock(data_base=db, collection='fzb', stock_table='sz_stock')
     missing_list["A股上市日期"] = missing_list["A股上市日期"].apply(lambda x: str(x.strip())[0:4])
     missing_2016 = missing_list[missing_list["A股上市日期"] < "2017"].copy()
     print(missing_2016.count())
@@ -230,7 +230,7 @@ if __name__ == '__main__':
     #file_path = os.path.join(os.path.abspath('.'), 'sz')
     #file_path = os.path.join(os.path.abspath('.'), 'sh')
     """append data from ./new"""
-    #append_data_from_new()
+    append_data_from_new()
     """
     filter_str = r'.*(sz|sh)_(lrb|fzb|llb)_\d{6}_\d{4}\.csv'
     file_path = os.path.join(os.path.abspath('.'), 'new')
@@ -241,9 +241,9 @@ if __name__ == '__main__':
 
     """Export collection to csv
     """
-    export_to_csv("fzb")
-    export_to_csv("lrb")
-    export_to_csv("llb")
+    #export_to_csv("fzb")
+    #export_to_csv("lrb")
+    #export_to_csv("llb")
     """
     with open("fzb_columns.csv",mode='r',newline='',encoding='utf-8') as f:
         fzb_columns = list(csv.reader(f))
