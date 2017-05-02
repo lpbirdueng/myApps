@@ -4,10 +4,16 @@ import itchat
 #import requests
 #import certifi
 
+@itchat.msg_register(itchat.content.CARD)
+def get_friend(msg):
+    if msg['ToUserName'] != 'filehelper': return
+    friendStatus = get_friend_status(msg["RecommendInfo"])
+    itchat.send(friendStatus['NickName'], 'filehelper')
 
 @itchat.msg_register(itchat.content.TEXT)
 def print_contect(msg):
-    print(msg["Text"])
+    print(msg.text)
+    return msg.text
 
 #D = Downloader()
 #results = D('https://login.weixin.qq.com/')
@@ -16,6 +22,7 @@ def print_contect(msg):
 #print(r.status_code)
 itchat.auto_login(hotReload=True)
 itchat.send("Hello filehelper", toUserName='filehelper')
-friends_list = itchat.search_friends()
+friends_list = itchat.get_friends()
+
 print(friends_list)
 itchat.run()
