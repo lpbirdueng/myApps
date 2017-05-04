@@ -10,11 +10,15 @@ import zipfile
 from io import BytesIO
 import logging
 from Common import constants
+from Common import web_utility
 import http.cookiejar
+import re
+import queue
 
-DEFAULT_AGENT = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36'
-#DEFAULT_DELAY = 5
-DEFAULT_DELAY = random.randint(2,6)
+DEFAULT_AGENT = \
+    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36"
+# DEFAULT_DELAY = 5
+DEFAULT_DELAY = random.randint(2, 6)
 DEFAULT_RETRIES = 10
 DEFAULT_TIMEOUT = 6000
 # DEFAULT_PROXIES = 'http://luale:ZAQ!5tgb@mwghkg.corp.knorr-bremse.com:8080/wpad.dat'
@@ -88,8 +92,8 @@ class Downloader:
                 code = e.code
                 if num_retries > 0 and 500 <= code < 600:
                     # retry 5XX HTTP errors
-                    #return self._get(url, headers, proxy, num_retries - 1, data)
-                    return self.download(url,headers,proxy,num_retries,data)
+                    # return self._get(url, headers, proxy, num_retries - 1, data)
+                    return self.download(url, headers, proxy, num_retries, data)
                 else:
                     logging.basicConfig(filename='download.log', level=logging.ERROR)
                     logging.error('%s,%s,%s', code, str(e), url)
@@ -115,13 +119,72 @@ class Downloader:
                 print(zipped_data)
                 logging.basicConfig(filename='download.log', level=logging.ERROR)
                 logging.error('Bad Zip,%s', self.data)
-                #return self.saveZipToLocal(url, filename, extract)
+                # return self.saveZipToLocal(url, filename, extract)
                 return False
         else:
-            f = open(filename, "w+b")
-            f.write(zipped_data)
-            f.close
+            with open(filename, "wb") as f:
+                f.write(zipped_data)
         return True
+
+    def crawl_sitemap(self, sitemap_url):
+        # download the sitemap file
+        if self.proxies:
+            proxy = self.proxies
+        else:
+            proxy = None
+        headers = {"user-agent": self.user_agent}
+        sitemap = self.download(url=sitemap_url, proxy=proxy, headers=headers, num_retries=self.num_retries)
+        # extract the sitemap links
+        links = re.findall(r'<loc>(.*?)</loc>', sitemap)
+        for link in links:
+            html = self.download(url=link, proxy=proxy, headers=headers, num_retries=self.num_retries)
+            # scrape html here
+
+    def link_crawler(self, seed_url, link_regex=None, delay=DEFAULT_DELAY, max_depth=-1, max_urls=-1, scrape_callback=None):
+        """Crawl from the given seed URL following links matched by link_regex"""
+        # the queue of URL's that still need to be crawled
+        crawl_queue = queue.deque([seed_url])
+        # the URL's that have been seen and at what depth
+        seen = {seed_url: 0}
+        # track how many URL's have been downloaded
+        num_urls = 0
+        rp = web_utility.get_robots(seed_url)
+        throttle = Throttle(delay)
+        proxy = self.proxies if self.proxies else None
+        headers = {"user-agent": self.user_agent}
+
+        while crawl_queue:
+            url = crawl_queue.pop()
+            # check url passes robots.txt restrictions
+            if rp.can_fetch(self.user_agent, url):
+                throttle.wait(url)
+                html = self.download(url, headers=headers, proxy=proxy, num_retries=self.num_retries)['html']
+                html_str = html.decode('utf-8')
+                links = []
+                if scrape_callback:
+                    links.extend(scrape_callback(url, html_str) or [])
+                depth = seen[url]
+                if depth != max_depth:
+                    # can still crawl further
+                    if link_regex:
+                        # filter for links matching our regualar expression
+                        links.extend(link for link in web_utility.get_links(html_str) if re.match(link_regex, link))
+
+                    for link in links:
+                        link = web_utility.normalize(seed_url, link)
+                        # check whether already crawled this link
+                        if link not in seen:
+                            seen[link] = depth + 1
+                            # check link is within same domain
+                            if web_utility.same_domain(seed_url, link):
+                                # success! add this new link to queue
+                                crawl_queue.append(link)
+                # check whether have reached downloaded maximum
+                num_urls += 1
+                if num_urls == max_urls:
+                    break
+            else:
+                print("Blocked by robots.txt:", url)
 
     def login_cookies(self, url, data={}):
         if data is not None:
@@ -133,9 +196,9 @@ class Downloader:
         proxy = self.proxies if self.proxies else None
         headers = {'user-agent': self.user_agent}
         request = urllib.request.Request(url, encoded_data, headers or {})
-        #cj = http.cookiejar.CookieJar()
-        #opener = self.opener or urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
-        #opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
+        # cj = http.cookiejar.CookieJar()
+        # opener = self.opener or urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
+        # opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
         opener = self.opener
         if proxy:
             proxy_params = {urlparse(url).scheme: proxy}
@@ -177,7 +240,7 @@ class Throttle:
         domain = urllib.parse.urlsplit(url).netloc
         last_accessed = self.domains.get(domain)
         if self.delay > 0 and last_accessed is not None:
-            sleep_secs = self.delay + random.uniform(0,2) - (datetime.now() - last_accessed).seconds
+            sleep_secs = self.delay + random.uniform(0, 2) - (datetime.now() - last_accessed).seconds
             if sleep_secs > 0:
                 time.sleep(sleep_secs)
         self.domains[domain] = datetime.now()
