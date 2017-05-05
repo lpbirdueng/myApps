@@ -128,19 +128,17 @@ class Downloader:
 
     def crawl_sitemap(self, sitemap_url):
         # download the sitemap file
-        if self.proxies:
-            proxy = self.proxies
-        else:
-            proxy = None
-        headers = {"user-agent": self.user_agent}
-        sitemap = self.download(url=sitemap_url, proxy=proxy, headers=headers, num_retries=self.num_retries)
+        # sitemap = self.download(url=sitemap_url, proxy=proxy, headers=headers, num_retries=self.num_retries)
+        sitemap = self.__call__(sitemap_url)
         # extract the sitemap links
         links = re.findall(r'<loc>(.*?)</loc>', sitemap)
         for link in links:
-            html = self.download(url=link, proxy=proxy, headers=headers, num_retries=self.num_retries)
+            # html = self.download(url=link, proxy=proxy, headers=headers, num_retries=self.num_retries)
+            html = self.__call__(url=link)
             # scrape html here
 
-    def link_crawler(self, seed_url, link_regex=None, delay=DEFAULT_DELAY, max_depth=-1, max_urls=-1, scrape_callback=None):
+    def link_crawler(self, seed_url, link_regex=None, delay=DEFAULT_DELAY, max_depth=-1, max_urls=-1,
+                     scrape_callback=None):
         """Crawl from the given seed URL following links matched by link_regex"""
         # the queue of URL's that still need to be crawled
         crawl_queue = queue.deque([seed_url])
@@ -150,15 +148,16 @@ class Downloader:
         num_urls = 0
         rp = web_utility.get_robots(seed_url)
         throttle = Throttle(delay)
-        proxy = self.proxies if self.proxies else None
-        headers = {"user-agent": self.user_agent}
+        # proxy = self.proxies if self.proxies else None
+        # headers = {"user-agent": self.user_agent}
 
         while crawl_queue:
             url = crawl_queue.pop()
             # check url passes robots.txt restrictions
             if rp.can_fetch(self.user_agent, url):
                 throttle.wait(url)
-                html = self.download(url, headers=headers, proxy=proxy, num_retries=self.num_retries)['html']
+                # html = self.download(url, headers=headers, proxy=proxy, num_retries=self.num_retries)['html']
+                html = self.__call__(url)
                 html_str = html.decode('utf-8')
                 links = []
                 if scrape_callback:

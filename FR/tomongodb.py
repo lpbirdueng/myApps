@@ -10,7 +10,6 @@ from Common import mongodb_utility
 from FR import frDownloader
 
 
-
 def initimportdb(path, expression, dbhost="localhost", dbport=27017):
     file_list = file_util.get_file_list_with_filter(path=path, expression=expression)
     print("file number = ", len(file_list))
@@ -43,7 +42,7 @@ def initimportdb(path, expression, dbhost="localhost", dbport=27017):
                 print(file_name)
                 # Move error file to error folder
                 error_path = os.path.join(os.path.abspath('.'), 'error file', os.path.split(file_name)[1])
-                #os.rename(file_name, error_path)
+                # os.rename(file_name, error_path)
                 os.replace(file_name, error_path)
         else:
             print("Collection not found for files", file_name)
@@ -106,38 +105,44 @@ def exportdatatodf(conditions={}, dbhost="localhost", dbport=27017, database="",
     results = db[collection].find(conditions)
     frame = pd.DataFrame(list(results))
     return frame
-def validate_stock(data_base = None, collection="fzb", stock_table="sh_stock"):
-    #db = mongodb_utility.connect_db(db_name="list_company")
-    stock_df = mongodb_utility.export2df(database=data_base,collection=stock_table)
+
+
+def validate_stock(data_base=None, collection="fzb", stock_table="sh_stock"):
+    # db = mongodb_utility.connect_db(db_name="list_company")
+    stock_df = mongodb_utility.export2df(database=data_base, collection=stock_table)
     report_df = mongodb_utility.export2df(database=data_base, collection=collection)
 
     missing_stock = stock_df[~stock_df['_id'].isin(report_df['机构ID'])]
-    #exclude B stock
+    # exclude B stock
     missing_stock_a = missing_stock[pd.Series(missing_stock['A股上市日期']).notnull()][["_id", "A股上市日期"]]
     missing_stock_a["A股上市日期"] = missing_stock_a["A股上市日期"].apply(lambda x: str(x.strip()))
     return missing_stock_a
+
+
 def validate_reports_download(table1='fzb', table2='lrb', auto_download=False):
     db = mongodb_utility.connect_db(db_name="list_company")
     df1 = mongodb_utility.export2df(database=db, collection=table1)
     df2 = mongodb_utility.export2df(database=db, collection=table2)
-    t1_notin_t2 = df1[~df1['_id'].isin(df2['_id'])][['_id','机构ID','报告年度']]
+    t1_notin_t2 = df1[~df1['_id'].isin(df2['_id'])][['_id', '机构ID', '报告年度']]
     t1_notin_t2['报告年度'] = t1_notin_t2['报告年度'].apply(lambda x: str(x.strip())[0:4])
-    t1_notin_t2= t1_notin_t2.drop_duplicates(['机构ID','报告年度'])
-    missing_t2 = t1_notin_t2[['机构ID','报告年度']].copy()
+    t1_notin_t2 = t1_notin_t2.drop_duplicates(['机构ID', '报告年度'])
+    missing_t2 = t1_notin_t2[['机构ID', '报告年度']].copy()
     missing_t2['max_year'] = missing_t2['报告年度']
     download_list = missing_t2.values.tolist()
     print(len(download_list))
     if auto_download:
         url = 'http://www.cninfo.com.cn/cninfo-new/data/download'
-        frDownloader.getFR(url=url, stock_list=download_list,types=[table2])
+        frDownloader.getFR(url=url, stock_list=download_list, types=[table2])
     return download_list
+
+
 def validate_bw_reports():
     db = mongodb_utility.connect_db(db_name="list_company")
     fzb_df = mongodb_utility.export2df(database=db, collection="fzb")
-    llb_df = mongodb_utility.export2df(database=db,collection="llb")
-    lrb_df = mongodb_utility.export2df(database=db,collection="lrb")
+    llb_df = mongodb_utility.export2df(database=db, collection="llb")
+    lrb_df = mongodb_utility.export2df(database=db, collection="lrb")
 
-    missing_fzb_in_lrb = fzb_df[~fzb_df['_id'].isin(lrb_df['_id'])][['_id','机构ID','报告年度']]
+    missing_fzb_in_lrb = fzb_df[~fzb_df['_id'].isin(lrb_df['_id'])][['_id', '机构ID', '报告年度']]
     print(missing_fzb_in_lrb)
     missing_fzb_in_lrb.to_csv('missing_fzb_lrb.csv')
 
@@ -159,17 +164,17 @@ def validate_bw_reports():
 
 def validate_data():
     db = mongodb_utility.connect_db(db_name="list_company")
-    sz_df = mongodb_utility.export2df(database=db,collection="sz_stock")
-    sh_df = mongodb_utility.export2df(database=db,collection="sh_stock")
+    sz_df = mongodb_utility.export2df(database=db, collection="sz_stock")
+    sh_df = mongodb_utility.export2df(database=db, collection="sh_stock")
     fzb_df = mongodb_utility.export2df(database=db, collection="fzb")
-    #llb_df = mongodb_utility.export2df(database=db,collection="llb")
-    #lrb_df = mongodb_utility.export2df(database=db,collection="lrb")
+    # llb_df = mongodb_utility.export2df(database=db,collection="llb")
+    # lrb_df = mongodb_utility.export2df(database=db,collection="lrb")
 
-    #missing_fzb_sz = sz_df[~sz_df['_id'].isin(fzb_df['机构ID'])]
+    # missing_fzb_sz = sz_df[~sz_df['_id'].isin(fzb_df['机构ID'])]
     missing_fzb_sh = sh_df[~sh_df['_id'].isin(fzb_df['机构ID'])]
     missing_sh_a = missing_fzb_sh[pd.Series(missing_fzb_sh['A股上市日期']).notnull()][["_id", "A股上市日期"]]
-    #print(missing_sh_a["A股上市日期"])
-    #missing_sh_a["A股上市日期"] = missing_sh_a["A股上市日期"].apply(lambda x: x.strip())
+    # print(missing_sh_a["A股上市日期"])
+    # missing_sh_a["A股上市日期"] = missing_sh_a["A股上市日期"].apply(lambda x: x.strip())
     missing_sh_a["A股上市日期"] = missing_sh_a["A股上市日期"].apply(lambda x: str(x.strip())[0:4])
     missing_sh_2017 = missing_sh_a[missing_sh_a["A股上市日期"] < "2017"].copy()
     print(missing_sh_2017.count())
@@ -179,12 +184,14 @@ def validate_data():
     """download missing data
     """
     url = 'http://www.cninfo.com.cn/cninfo-new/data/download'
-    #frDownloader.getFR(url=url, stock_list=download_list)
+    # frDownloader.getFR(url=url, stock_list=download_list)
 
 
-    #missing_fzb_sh.to_csv("missing_fzb_sh.csv")
-    #print(missing_fzb_sh.count())
+    # missing_fzb_sh.to_csv("missing_fzb_sh.csv")
+    # print(missing_fzb_sh.count())
     return
+
+
 def append_data_from_new():
     filter_str = r'.*(sz|sh)_(lrb|fzb|llb)_\d{6}_\d{4}\.csv'
     file_path = os.path.join(os.path.abspath('.'), 'new')
@@ -192,25 +199,27 @@ def append_data_from_new():
     inserted_list = initimportdb(path=file_path, expression=filter_str)
     print(len(inserted_list))
 
+
 def export_to_csv(collection="fzb"):
     column_name = collection + "_columns.csv"
-    with open(column_name,mode='r',newline='',encoding='utf-8') as f:
+    with open(column_name, mode='r', newline='', encoding='utf-8') as f:
         columns = list(csv.reader(f))
         columns = columns[0]
 
     df = exportdatatodf(database="list_company", collection=collection)
-    #sorted_df = df.sort_values(by='_id')
+    # sorted_df = df.sort_values(by='_id')
     sorted_df = df.reindex_axis(columns, axis=1)
     out_file_name = collection + "_out.csv"
-    sorted_df.to_csv(out_file_name,encoding="UTF-8")
+    sorted_df.to_csv(out_file_name, encoding="UTF-8")
+
 
 if __name__ == '__main__':
     """validate data"""
-    #validate_data()
-    #validate_bw_reports()
-    #validate_reports_download(table1="fzb",table2="llb",auto_download=True)
+    # validate_data()
+    # validate_bw_reports()
+    # validate_reports_download(table1="fzb",table2="llb",auto_download=True)
 
-    #db = mongodb_utility.connect_db(db_name="list_company")
+    # db = mongodb_utility.connect_db(db_name="list_company")
     """validate SH A stock and download missing stock    """
     """
     missing_list = validate_stock(data_base=db, collection='fzb', stock_table='sz_stock')
@@ -221,14 +230,14 @@ if __name__ == '__main__':
     download_list = missing_2016.values.tolist()
     """
     """download missing data"""
-    #url = 'http://www.cninfo.com.cn/cninfo-new/data/download'
-    #frDownloader.getFR(url=url, stock_list=download_list)
+    # url = 'http://www.cninfo.com.cn/cninfo-new/data/download'
+    # frDownloader.getFR(url=url, stock_list=download_list)
 
     """import data from csv to db"""
-    #filter_str = r'.*(sz|sh)_(lrb|fzb|llb)_\d{6}_\d{4}\.csv'
+    # filter_str = r'.*(sz|sh)_(lrb|fzb|llb)_\d{6}_\d{4}\.csv'
     # inserted_list = initimportdb(path="./sh", expression=filter_str)
-    #file_path = os.path.join(os.path.abspath('.'), 'sz')
-    #file_path = os.path.join(os.path.abspath('.'), 'sh')
+    # file_path = os.path.join(os.path.abspath('.'), 'sz')
+    # file_path = os.path.join(os.path.abspath('.'), 'sh')
     """append data from ./new"""
     append_data_from_new()
     """
@@ -241,9 +250,9 @@ if __name__ == '__main__':
 
     """Export collection to csv
     """
-    #export_to_csv("fzb")
-    #export_to_csv("lrb")
-    #export_to_csv("llb")
+    # export_to_csv("fzb")
+    # export_to_csv("lrb")
+    # export_to_csv("llb")
     """
     with open("fzb_columns.csv",mode='r',newline='',encoding='utf-8') as f:
         fzb_columns = list(csv.reader(f))
@@ -258,13 +267,13 @@ if __name__ == '__main__':
     """
     """import stock code
     """
-    #SZ stock insert
-    #file_path = os.path.join(os.path.abspath('.'),'sz_list.csv')
-    #inid = initstocklist(file_name=file_path, id_column="A股代码")
-    #print(len(inid[0]))
-    #Shanghai stock insert
-    #file_path = os.path.join(os.path.abspath('.'),'sh_a.csv')
-    #inid = initstocklist(collection_name="sh_stock", file_name=file_path, id_column="A股代码")
-    #file_path = os.path.join(os.path.abspath('.'), 'sh_b.csv')
-    #inid = initstocklist(collection_name="sh_stock", file_name=file_path, id_column="B股代码")
-    #print(len(inid[0]))
+    # SZ stock insert
+    # file_path = os.path.join(os.path.abspath('.'),'sz_list.csv')
+    # inid = initstocklist(file_name=file_path, id_column="A股代码")
+    # print(len(inid[0]))
+    # Shanghai stock insert
+    # file_path = os.path.join(os.path.abspath('.'),'sh_a.csv')
+    # inid = initstocklist(collection_name="sh_stock", file_name=file_path, id_column="A股代码")
+    # file_path = os.path.join(os.path.abspath('.'), 'sh_b.csv')
+    # inid = initstocklist(collection_name="sh_stock", file_name=file_path, id_column="B股代码")
+    # print(len(inid[0]))

@@ -40,7 +40,7 @@ def get_robots(url):
 
 def get_links(html):
     """Return a list of links from html"""
-    # a regualar expression to extract all links from the webpage
+    # a regular expression to extract all links from the webpage
     webpage_regex = re.compile(r'<a[^>]+href=["\'](.*?)["\']', re.IGNORECASE)
     # list of all links from the webpage
     return webpage_regex.findall(html)
