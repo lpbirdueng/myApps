@@ -158,9 +158,14 @@ class Downloader:
                 throttle.wait(url)
                 # html = self.download(url, headers=headers, proxy=proxy, num_retries=self.num_retries)['html']
                 html = self.__call__(url)
-                html_str = html.decode('utf-8')
+                try:
+                    html_str = html.decode('gbk')
+                except Exception as e:
+                    print("Decode error: ", str(e))
+
+                #html_str = str(html)
                 links = []
-                if scrape_callback:
+                if scrape_callback and len(html) > 0:
                     links.extend(scrape_callback(url, html_str) or [])
                 depth = seen[url]
                 if depth != max_depth:
