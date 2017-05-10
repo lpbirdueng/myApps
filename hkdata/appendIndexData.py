@@ -6,6 +6,8 @@ from datetime import date
 from datetime import datetime
 from tools import removeheader
 
+
+
 def getlastdate(filename=''):
     #f = open(filename, 'r',encoding = 'utf-16', newline='')
     #text = f.read()
@@ -22,6 +24,8 @@ def getlastdate(filename=''):
     last_date = date(int(last_row[0][0:4]),int(last_row[0][4:6]),int(last_row[0][6:8]))
     #last_date = datetime.strptime(last_row[0],'%Y%m%d')
     return last_date
+
+
 def appenddata(url='', filename=''):
     data = crawler_tools.download(url)
     if data:
@@ -39,6 +43,8 @@ def appenddata(url='', filename=''):
             #f = open(filename, 'a', encoding = 'utf-16', newline='')
             #f.write(item)
             #f.close()
+
+
 def appendIndexData(url_prefix='',filename=''):
     today = date.today()
     # 1 day
