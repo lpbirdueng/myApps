@@ -159,7 +159,7 @@ class Downloader:
                 # html = self.download(url, headers=headers, proxy=proxy, num_retries=self.num_retries)['html']
                 html = self.__call__(url)
                 try:
-                    html_str = html.decode('gbk')
+                    html_str = html.decode('gbk', errors='ignore')
                 except Exception as e:
                     print("Decode error: ", str(e))
 

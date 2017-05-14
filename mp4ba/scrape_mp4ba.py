@@ -26,7 +26,7 @@ class MP4ba_Scrapecallback:
                 if field == 'title':
                     title = tree.cssselect('div.newscon > h1')
                     if len(title)>0:
-                        title_text = title[0].text_content()
+                        title_text = title[0].text_content().encode('utf-8',errors = 'ignore')
                         #print("title =", title)
                     else:
                         title_text = "null"
@@ -35,7 +35,7 @@ class MP4ba_Scrapecallback:
                 if field == 'update info':
                     update_info = tree.cssselect('div.newscon > span.info')
                     if len(update_info)>0:
-                        update_info_text = update_info[0].text_content()
+                        update_info_text = update_info[0].text_content().encode('utf-8',errors = 'ignore')
                         #print("Update = ", update_info)
                     else:
                         update_info_text = "null"
@@ -56,7 +56,7 @@ class MP4ba_Scrapecallback:
                     for line in text_contents:
                         text = text + ";" + line.text_content()
                     #print("text content = ", text)
-                    row.append(text)
+                    row.append(text.encode('utf-8', errors='ignore'))
                     continue
                 if field == 'play_link':
                     play_link = tree.cssselect('iframe')
